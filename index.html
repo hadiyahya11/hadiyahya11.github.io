@@ -1,1 +1,812 @@
-Hello World
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    /* set the CSS */
+
+    body {
+        font: 12px Arial;
+    }
+</style>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<button id="button">Hide mean</button>
+
+<body>
+</body>
+<script>
+
+
+    d3.csv("prototype.csv").then(function (x) {
+        // Set the dimensions of the canvas / graph
+        var margin = { top: 30, right: 20, bottom: 30, left: 50 },
+            width = 600 - margin.left - margin.right,
+            height = 270 - margin.top - margin.bottom;
+
+
+        //array that holds the normalized dataset
+        var data = [];
+
+        var data1 = [];
+
+        for (var j = 0; j < x.length; j++) {
+            data1.push(x[j]);
+        }
+
+        console.log(data1);
+
+
+        //array that holds the actual values
+        var temp = [];
+
+        var temp2 = [];
+
+        //columns names
+        let features = [];
+
+        const index = d3.local();
+
+        // Set the ranges
+        var x1 = d3.scaleLinear().range([0, width]);
+        var y1 = d3.scaleLinear().range([height, 0]);
+
+        var x_bar = d3.scaleBand().range([0, width]).padding(0.1);
+        var y_bar = d3.scaleLinear().range([height, 0]);
+
+
+
+
+
+
+        //overall svg
+        let svg = d3.select("body")
+            .append("svg")
+            .attr("width", 1400)
+            .attr("height", 1000)
+            .attr("id", "mainsvg");
+
+        // Adds the svg canvas
+        var svg2 = d3.select("svg#mainsvg")
+            .append("svg")
+            .append("g")
+            .attr("id", "pointplot")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("transform",
+                "translate(" + 750 + "," + margin.top + ")")
+            .attr("html", "true");
+
+
+
+        var svg3 = d3.select("svg#mainsvg")
+            .append("g") //group to move svgsideways
+            .append("svg")
+            .attr("id", "spiderchart");
+
+        var svg4 = d3.select("svg#mainsvg").append("svg")
+            .append("g")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("transform", "translate (" + 750 + "," + 400 + ")")
+            .attr("id", "barplot");
+
+
+        x_bar.domain(x.map(function (d) { return x.indexOf(d); }));
+        y_bar.domain([0, d3.max(x, function (d) { return d.SucRate; })]);
+
+
+        var color_bar = d3.scaleOrdinal().domain(x).range(d3.schemePaired);
+        var indexList_bar = [];
+
+        svg4.selectAll(".bar")
+            .data(x)
+            .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", function (d) { return x_bar(x.indexOf(d)); })
+            .attr("width", x_bar.bandwidth())
+            .attr("y", function (d) { return y_bar(d.SucRate); })
+            .attr("height", function (d) { return height - y_bar(d.SucRate) })
+            /*.on('mouseenter', function (actual, i) {
+        d3.selectAll('.value')
+          .attr('opacity', 0)
+
+        d3.select(this)
+          .transition()
+          .duration(300)
+          .attr('opacity', 0.6)
+          .attr('x', (a) => x_bar(x.indexOf(a)) - 5)
+          .attr('width', x_bar.bandwidth() + 10)
+
+        const y = y_bar(actual.value)
+
+        line = svg4.append('line')
+          .attr('id', 'limit')
+          .attr('x1', 0)
+          .attr('y1', y)
+          .attr('x2', width)
+          .attr('y2', y)
+
+        svg4.append('text')
+          .attr('class', 'divergence')
+          .attr('x', (a) => x_bar(x.indexOf(a)) + x_bar.bandwidth() / 2)
+          .attr('y', (a) => y_bar(a.value) + 30)
+          .attr('fill', 'white')
+          .attr('text-anchor', 'middle')
+          .text((a, idx) => {
+            const divergence = (a.value - actual.value).toFixed(1)
+            
+            let text = ''
+            if (divergence > 0) text += '+'
+            text += `${divergence}%`
+
+            return idx !== i ? text : '';
+          })
+
+      })
+      .on('mouseleave', function () {
+        d3.selectAll('.value')
+          .attr('opacity', 1)
+
+        d3.select(this)
+          .transition()
+          .duration(300)
+          .attr('opacity', 1)
+          .attr('x', (a) => x_bar(x.indexOf(a)))
+          .attr('width', x_bar.bandwidth())
+
+        svg4.selectAll('#limit').remove()
+        svg4.selectAll('.divergence').remove()
+      });*/
+        // .each(function (d, i) {
+        //     index.set(this, i);            // Store index in local variable.
+        // })
+        // .on("click", function(d,i){
+
+        // });
+        // .on('click', function (d, i1) {
+
+        //     var areaZonev = areaZone + index.get(this);
+
+        //     var d = min_max(i1);
+        //     //console.log(d.Time2ans)
+
+        //     if (d3.select(this).attr("r") == 3.5) {
+        //         var ind = 0;
+        //         d3.select(this)
+        //             .attr("fill", function (d, i) {
+        //                 ind = color4(d);
+        //                 return ind;
+        //             })
+        //             .attr("r", 7);
+
+
+        //         data.push(d);
+        //         // console.log(data)
+
+
+        //         if (!indexList.includes(index.get(this))) {
+
+        //             indexList.push(index.get(this));
+        //             let coordinates = getPathCoordinates(d);
+
+
+        //             svg3.append("path")
+        //                 .datum(coordinates)
+        //                 .attr("id", "areaZone" + index.get(this))
+        //                 .attr("class", "vol")
+        //                 .attr("d", line)
+        //                 .attr("stroke-width", 3)
+        //                 .attr("stroke", function (d, i) { return ind; })
+        //                 .attr("fill", function (d, i) { return ind; })
+        //                 .attr("stroke-opacity", 1)
+        //                 .attr("opacity", 0.5)
+        //                 .on('mouseover', function (da, i) {
+        //                     //Dim all blobs
+        //                     d3.selectAll(".radarArea")
+        //                         .transition().duration(200)
+        //                         .style("opacity", 0.5);
+        //                     //Bring back the hovered over blob
+        //                     d3.select(this)
+        //                         .transition().duration(200)
+        //                         .style("opacity", 0.8);
+        //                     da = i1;
+        //                     console.log(da)
+        //                     for (var i = 0; i < features.length; i++) {
+        //                         tooltips1[i]
+        //                             .attr('x', 440)
+        //                             .attr('y', 1 + (i * 18))
+        //                             .text(features[i] + " : " + Object.values(da)[i])
+        //                             .transition().duration(200)
+        //                             .style('opacity', 1);
+        //                     }
+
+        //                 })
+        //                 .on('mouseout', function () {
+        //                     //Bring back all blobs
+        //                     d3.selectAll(".radarArea")
+        //                         .transition().duration(200)
+        //                         .style("opacity", 0.35);
+        //                     d3.select(this)
+        //                         .transition().duration(200)
+        //                         .style("opacity", 0.35);
+        //                     for (var i = 0; i < features.length; i++) {
+        //                         tooltips1[i].transition().duration(200)
+        //                             .style("opacity", 0);
+        //                     }
+
+        //                 });
+
+        //         }
+        //         else {
+        //             d3.select("#areaZone" + index.get(this)).style("opacity", 0.35).attr("pointer-events", "all");
+
+        //         }
+
+        //     } else {
+        //         d3.select(this).attr("r", 3.5).attr("fill", "000000");
+
+        //         for (var i = 0; i < data.length; ++i) {
+        //             if (data[i].Deviations === d.Deviations && data[i].NumberWord === d.NumberWord && data[i].SucRate === d.SucRate
+        //                 && data[i].EmotionCount === d.EmotionCount && data[i].Time2ans === d.Time2ans) {
+        //                 console.log("dkhol" + i)
+        //                 data.splice(i, 1);
+        //                 //console.log(data);
+        //             }
+        //         }
+
+        //         // console.log(data)
+
+        //         d3.select("#areaZone" + index.get(this)).style("opacity", 0).attr("pointer-events", "none");
+
+
+        //     }
+
+        //     //console.log( d3.selectAll('.vol').datum().length);
+
+
+
+        // });
+
+
+        //add X axis
+        svg4.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x_bar));
+
+            //text label for the X axis
+            svg4.append("text")
+            .attr("transform",
+                "translate(" + (width / 2) + " ," +
+                (height + margin.top + 20) + ")")
+            .style("text-anchor", "middle")
+            .text("Students");
+
+        // add Y axis
+        svg4.append("g")
+            .call(d3.axisLeft(y_bar));
+
+            //text label for Y axis
+            svg4.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left)
+            .attr("x", 0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("Success Rate");
+
+
+        //add vertical lines
+        svg4.append('g')
+            .attr('class', 'grid')
+            .call(d3.axisLeft()
+                .scale(y_bar)
+                .tickSize(-width, 0, 0)
+                .tickFormat(''))
+
+        features = Object.keys(x[0])
+
+        //convert strings into numbers
+        x.forEach(function (d) {
+            for (var i = 0; i < features.length; ++i) {
+                var ft = features[i]
+                d[ft] = +d[ft];
+            }
+        });
+
+        // Scale the range of the data
+        // x1.domain(d3.extent(x, function (d) { return x.indexOf(d); }));
+        x1.domain([0, x.length]);
+        y1.domain([0, d3.max(x, function (d) { return d.SucRate; })]);
+
+        var length = x.length
+
+
+
+        // var max2= {
+        //     (features[i]).toString: d3.max(x,d=>d[features[i]])
+        // }
+
+        var max = {
+            Deviations: d3.max(x, d => d.Deviations),
+            EmotionCount: d3.max(x, d => d.EmotionCount),
+            NumberWord: d3.max(x, d => d.NumberWord),
+            SucRate: d3.max(x, d => d.SucRate),
+            Time2ans: d3.max(x, d => d.Time2ans)
+        }
+
+        var min = {
+            Deviations: d3.min(x, d => d.Deviations),
+            EmotionCount: d3.min(x, d => d.EmotionCount),
+            NumberWord: d3.min(x, d => d.NumberWord),
+            SucRate: d3.min(x, d => d.SucRate),
+            Time2ans: d3.min(x, d => d.Time2ans)
+        }
+
+
+
+
+        //compute average
+        var average = {
+            Deviations: d3.mean(x, d => d.Deviations).toFixed(2),
+            EmotionCount: d3.mean(x, d => d.EmotionCount).toFixed(2),
+            NumberWord: d3.mean(x, d => d.NumberWord).toFixed(2),
+            SucRate: d3.mean(x, d => d.SucRate).toFixed(2),
+            Time2ans: d3.mean(x, d => d.Time2ans).toFixed(2)
+        }
+        temp.push(average)
+        console.log(temp)
+
+        //min_max normalization
+        function min_max(d) {
+            var res = JSON.parse(JSON.stringify(d))
+            res.Deviations = (res.Deviations - min.Deviations) / (max.Deviations - min.Deviations)
+            res.EmotionCount = (res.EmotionCount - min.EmotionCount) / (max.EmotionCount - min.EmotionCount)
+            res.NumberWord = (res.NumberWord - min.NumberWord) / (max.NumberWord - min.NumberWord)
+            res.Time2ans = (res.Time2ans - min.Time2ans) / (max.Time2ans - min.Time2ans)
+            res.SucRate = (res.SucRate - min.SucRate) / (max.SucRate - min.SucRate)
+            return res;
+        }
+
+        for (var i = 0; i < length; ++i) {
+            var d = JSON.parse(JSON.stringify(x[i]))
+            temp2.push(min_max(d))
+        }
+
+        var averageNorm = {
+            Deviations: d3.mean(temp2, d => d.Deviations),
+            EmotionCount: d3.mean(temp2, d => d.EmotionCount),
+            NumberWord: d3.mean(temp2, d => d.NumberWord),
+            SucRate: d3.mean(temp2, d => d.SucRate),
+            Time2ans: d3.mean(temp2, d => d.Time2ans)
+        }
+        temp2.unshift(averageNorm)
+        data.push(averageNorm);
+
+        console.log(data)
+
+        function reverse_min_max(d) {
+            var res = JSON.parse(JSON.stringify(d));
+            res.Deviations = res.Deviations * (max.Deviations - min.Deviations) + min.Deviations
+            res.NumberWord = res.NumberWord * (max.NumberWord - min.NumberWord) + min.NumberWord
+            res.EmotionCount = res.EmotionCount * (max.EmotionCount - min.EmotionCount) + min.EmotionCount
+            res.SucRate = res.SucRate * (max.SucRate - min.SucRate) + min.SucRate
+            res.Time2ans = res.Time2ans * (max.Time2ans - min.Time2ans) + min.Time2ans
+            return
+        }
+
+        //should be called after doing min_max on the data point
+        function invert_scale(d, feature) {
+            var temp = 1 - d[feature]
+            d[feature] = temp;
+        }
+
+
+        for (var i = 1; i < data.length; ++i) {
+            var reverse = JSON.parse(JSON.stringify(data[i]));
+            temp.push(reverse)
+        }
+        console.log(temp)
+
+
+
+        let line = d3.line()
+            .x(d => d.x)
+            .y(d => d.y);
+
+        var color4 = d3.scaleOrdinal().domain(x).range(d3.schemePaired);
+        const areaZone = "areaZone";
+
+        var indexList = [];
+
+
+        // Add the scatterplot
+        svg2.selectAll("dot")
+            .data(x)
+            .enter().append("circle")
+            .attr("r", 3.5)
+            .attr("cx", function (d) { return x1(x.indexOf(d) + 1); })
+            .attr("cy", function (d) { return y1(d.SucRate); })
+            .each(function (d, i) {
+                index.set(this, i);            // Store index in local variable.
+            })
+            .on('click', function (d, i1) {
+
+                var areaZonev = areaZone + index.get(this);
+
+                var d = min_max(i1);
+                //console.log(d.Time2ans)
+
+                if (d3.select(this).attr("r") == 3.5) {
+                    var ind = 0;
+                    d3.select(this)
+                        .attr("fill", function (d, i) {
+                            ind = color4(d);
+                            return ind;
+                        })
+                        .attr("r", 7);
+
+
+                    data.push(d);
+                    // console.log(data)
+
+
+                    if (!indexList.includes(index.get(this))) {
+
+                        indexList.push(index.get(this));
+                        let coordinates = getPathCoordinates(d);
+
+
+                        svg3.append("path")
+                            .datum(coordinates)
+                            .attr("id", "areaZone" + index.get(this))
+                            .attr("class", "vol")
+                            .attr("d", line)
+                            .attr("stroke-width", 3)
+                            .attr("stroke", function (d, i) { return ind; })
+                            .attr("fill", function (d, i) { return ind; })
+                            .attr("stroke-opacity", 1)
+                            .attr("opacity", 0.5)
+                            .on('mouseover', function (da, i) {
+                                //Dim all blobs
+                                d3.selectAll(".radarArea")
+                                    .transition().duration(200)
+                                    .style("opacity", 0.5);
+                                //Bring back the hovered over blob
+                                d3.select(this)
+                                    .transition().duration(200)
+                                    .style("opacity", 0.8);
+                                da = i1;
+                                console.log(da)
+                                for (var i = 0; i < features.length; i++) {
+                                    tooltips1[i]
+                                        .attr('x', 440)
+                                        .attr('y', 1 + (i * 18))
+                                        .text(features[i] + " : " + Object.values(da)[i])
+                                        .transition().duration(200)
+                                        .style('opacity', 1);
+                                }
+
+                            })
+                            .on('mouseout', function () {
+                                //Bring back all blobs
+                                d3.selectAll(".radarArea")
+                                    .transition().duration(200)
+                                    .style("opacity", 0.35);
+                                d3.select(this)
+                                    .transition().duration(200)
+                                    .style("opacity", 0.35);
+                                for (var i = 0; i < features.length; i++) {
+                                    tooltips1[i].transition().duration(200)
+                                        .style("opacity", 0);
+                                }
+
+                            });
+
+                    }
+                    else {
+                        d3.select("#areaZone" + index.get(this)).style("opacity", 0.35).attr("pointer-events", "all");
+
+                    }
+
+                } else {
+                    d3.select(this).attr("r", 3.5).attr("fill", "000000");
+
+                    for (var i = 0; i < data.length; ++i) {
+                        if (data[i].Deviations === d.Deviations && data[i].NumberWord === d.NumberWord && data[i].SucRate === d.SucRate
+                            && data[i].EmotionCount === d.EmotionCount && data[i].Time2ans === d.Time2ans) {
+                            console.log("dkhol" + i)
+                            data.splice(i, 1);
+                            //console.log(data);
+                        }
+                    }
+
+                    // console.log(data)
+
+                    d3.select("#areaZone" + index.get(this)).style("opacity", 0).attr("pointer-events", "none");
+
+
+                }
+
+                //console.log( d3.selectAll('.vol').datum().length);
+
+
+
+            });
+
+        // Add the X Axis
+        svg2.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x1));
+
+        //text label for x axis
+        svg2.append("text")
+            .attr("transform",
+                "translate(" + (width / 2) + " ," +
+                (height + margin.top + 20) + ")")
+            .style("text-anchor", "middle")
+            .text("Students");
+
+        // Add the Y Axis
+        svg2.append("g")
+            .call(d3.axisLeft(y1));
+
+        //text label for y axis
+        svg2.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left)
+            .attr("x", 0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("Success Rate");
+
+
+        //convert the scale from [0,1] to pixels
+        let radialScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([0, 250]);
+
+        let ticks = [0.2, 0.4, 0.6, 0.8, 1];
+
+        //circles for the radar
+        ticks.forEach(t =>
+            svg3.append("circle")
+                .attr("cx", 350)
+                .attr("cy", 350)
+                .attr("fill", "none")
+                .attr("stroke", "gray")
+                .attr("r", radialScale(t))
+        );
+
+        //labels
+        ticks.forEach(t =>
+            svg3.append("text")
+                .attr("x", 355)
+                .attr("y", 350 - radialScale(t))
+                .text(t.toString())
+        );
+
+        function angleToCoordinate(angle, value) {
+            let x = Math.cos(angle) * radialScale(value);
+            let y = Math.sin(angle) * radialScale(value);
+            return { "x": 350 + x, "y": 350 - y };
+        }
+
+
+        //draw text and label
+        for (var i = 0; i < features.length; i++) {
+            let ft_name = features[i];
+            let angle = (Math.PI / 2) + (2 * Math.PI * i / features.length);
+            var line_coordinate = 0;
+            var label_coordinate = 0;
+            if (features[i] === "EmotionCount") {
+                line_coordinate = angleToCoordinate(angle, 1);
+                label_coordinate = angleToCoordinate(angle, 1.35);
+            } else {
+                if (features[i] === "NumberWord") {
+                    line_coordinate = angleToCoordinate(angle, 1);
+                    label_coordinate = angleToCoordinate(angle, 1.2);
+                } else {
+                    line_coordinate = angleToCoordinate(angle, 1);
+                    label_coordinate = angleToCoordinate(angle, 1.05);
+                }
+            }
+
+            //draw axis line
+            svg3.append("line")
+                .attr("x1", 350)
+                .attr("y1", 350)
+                .attr("x2", line_coordinate.x)
+                .attr("y2", line_coordinate.y)
+                .attr("stroke", "black");
+
+            //draw axis label
+            svg3.append("text")
+                .attr("x", label_coordinate.x)
+                .attr("y", label_coordinate.y)
+                .text(ft_name)
+                .on("click", function () {
+                    var txt = d3.select(this).text();
+                    if (txt.startsWith("1-")) {
+                        d3.select(this).text(ft_name);
+                    } else {
+                        d3.select(this).text("1-" + ft_name);
+
+                    }
+                    var coo = []
+                    var new_coordinates = []
+                    //var old_coordinates = []
+                    for (var i = 0; i < data.length; ++i) {
+                        var tempo = getPathCoordinates(data[i]);
+                        for (var k = 0; k < tempo.length; ++k) {
+                            coo.push(tempo[k])
+                        }
+
+                    }
+                    d3.selectAll('.vol').each(function (d, i) {
+
+                        //console.log(coo)
+                        var selection = d
+                        console.log(selection.length)
+                        //console.log(coo)
+                        console.log(coo.length);
+
+                        for (var j = 0; j < coo.length; j = j + selection.length) {
+                            //each data point has 5 coordinates for path so check if the first 5 consecutive coordatinates equal the selection
+                            var cond = true;
+                            for (var i = 0; i < selection.length; ++i) {
+                                if (coo[i + j].x != selection[i].x || coo[i + j].y != selection[i].y) {
+                                    cond = false;
+                                }
+                            }
+                            if (cond) {
+                                console.log(j)
+                                console.log(j % 4)
+                                //var old_coordinates = getPathCoordinates(data[j%4])
+                                invert_scale(data[j % 4], ft_name);
+                                var temp = data[j % 4];
+                                new_coordinates = getPathCoordinates(temp);
+                                for (var i = 0; i < new_coordinates.length; ++i) {
+                                    coo[j + i] = new_coordinates[i];
+                                }
+                                console.log(new_coordinates)
+                                //  var cond2 = true;
+                                //for(var i=0;i <selection.length;++i){
+                                //        // console.log(coo[i])
+                                //        // console.log(selection[i])
+                                //         if(old_coordinates[i].x == selection[i].x && old_coordinates[i].y == selection[i].y){
+                                //             //console.log("dkholt")
+                                //             cond2 = cond2 && true;
+                                //         }else{
+                                //             cond2 = false
+                                //         }
+                                //     }
+                                // console.log(cond2)
+                                // if(cond2){
+                                //     d3.select(this).datum(new_coordinates).attr("d",line);
+                                // }
+                                d3.select(this).datum(new_coordinates).attr("d", line)
+                            }
+
+
+                        }
+
+
+
+                    });
+                    //d3.selectAll(".vol").dat(coo).attr("d",line)
+                });
+        }
+
+
+
+        let colors = ["darkorange", "gray", "navy"];
+
+
+        function getPathCoordinates(data_point) {
+            let coordinates = [];
+            for (var i = 0; i < features.length; i++) {
+                let ft_name = features[i];
+                let angle = (Math.PI / 2) + (2 * Math.PI * i / features.length);
+                coordinates.push(angleToCoordinate(angle, data_point[ft_name]));
+            }
+            return coordinates;
+        }
+
+        var g = svg3.append("g")
+            .attr("transform", "translate(" + 100 + "," + 100 + ")")
+            .attr("html", "true");
+
+        let tooltips1 = [];
+
+        for (var i = 0; i < features.length; i++) {
+            var tooltip = g.append("text")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+
+            tooltips1.push(tooltip);
+        }
+
+        for (var i = 0; i < data.length; i++) {
+
+            let d = data[i];
+            let d2 = temp[i];
+            let color = colors[i];
+            let coordinates = getPathCoordinates(d);
+
+            //draw the path element
+            var path = svg3.append("path")
+                .datum(coordinates)
+                .attr("id", "mean")
+                .attr("class", "vol")
+                .attr("d", line)
+                .attr("stroke-width", 3)
+                .attr("stroke", color)
+                .attr("fill", color)
+                .attr("stroke-opacity", 1)
+                .attr("opacity", 0.5)
+                .on('mouseover', function (da, i) {
+                    //Dim all blobs
+                    d3.selectAll(".radarArea")
+                        .transition().duration(200)
+                        .style("opacity", 0.5);
+                    //Bring back the hovered over blob
+                    d3.select(this)
+                        .transition().duration(200)
+                        .style("opacity", 0.8);
+                    da = d2;
+                    console.log(da)
+                    for (var i = 0; i < features.length; i++) {
+                        tooltips1[i]
+                            .attr('x', 440)
+                            .attr('y', 1 + (i * 18))
+                            .text(features[i] + " : " + Object.values(da)[i])
+                            .transition().duration(200)
+                            .style('opacity', 1);
+                    }
+                    //console.log(da.length);
+                    //console.log(da);
+
+                })
+                .on('mouseout', function () {
+                    //Bring back all blobs
+                    d3.selectAll(".radarArea")
+                        .transition().duration(200)
+                        .style("opacity", 0.35);
+                    d3.select(this)
+                        .transition().duration(200)
+                        .style("opacity", 0.35);
+                    for (var i = 0; i < features.length; i++) {
+                        tooltips1[i].transition().duration(200)
+                            .style("opacity", 0);
+                    }
+
+                });
+        }
+        var opacity = d3.select("#mean").attr("opacity");
+        var text = "Hide mean";
+        d3.select("#button")
+            .on("click", function () {
+                console.log(opacity);
+                if (opacity != 0) {
+                    d3.select("#mean").style("opacity", 0).attr("pointer-events", "none");
+                    opacity = 0;
+                    text = "Show mean";
+                    //console.log(text);
+
+                } else {
+                    d3.select("#mean").style("opacity", 0.5).attr("pointer-events", "all");
+                    opacity = 0.5;
+                    text = "Hide mean";
+                }
+                d3.select("#button").text(text)
+
+            });
+
+    });
+
+
+
+
+
+</script>
+
+</html>
