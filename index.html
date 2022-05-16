@@ -431,6 +431,7 @@
             .on('click', function (d, i1) {
 
                 var areaZonev = areaZone + index.get(this);
+                
 
                 var d = min_max(i1);
                 //console.log(d.Time2ans)
@@ -444,6 +445,19 @@
                         })
                         .attr("r", 7);
 
+                    d3.selectAll(".label").each(function(){
+                        var txt = d3.select(this).text();
+                        console.log(txt)
+                        if(txt.startsWith("1-")){
+                           // console.log("dkholt123")
+                           // console.log(d)
+                            var feature = txt.slice(2);
+                           // console.log(feature)
+                            invert_scale(d,feature);
+                          //  console.log("after")
+                           // console.log(d)
+                        }
+                    })
 
                     data.push(d);
                     // console.log(data)
@@ -620,6 +634,7 @@
 
             //draw axis label
             svg3.append("text")
+                .attr("class","label")
                 .attr("x", label_coordinate.x)
                 .attr("y", label_coordinate.y)
                 .text(ft_name)
@@ -658,8 +673,8 @@
                                 }
                             }
                             if (cond) {
-                                console.log(j)
-                                console.log(j % 4)
+                                //console.log(j)
+                                //console.log(j % 4)
                                 //var old_coordinates = getPathCoordinates(data[j%4])
                                 invert_scale(data[j % 4], ft_name);
                                 var temp = data[j % 4];
@@ -668,21 +683,6 @@
                                     coo[j + i] = new_coordinates[i];
                                 }
                                 console.log(new_coordinates)
-                                //  var cond2 = true;
-                                //for(var i=0;i <selection.length;++i){
-                                //        // console.log(coo[i])
-                                //        // console.log(selection[i])
-                                //         if(old_coordinates[i].x == selection[i].x && old_coordinates[i].y == selection[i].y){
-                                //             //console.log("dkholt")
-                                //             cond2 = cond2 && true;
-                                //         }else{
-                                //             cond2 = false
-                                //         }
-                                //     }
-                                // console.log(cond2)
-                                // if(cond2){
-                                //     d3.select(this).datum(new_coordinates).attr("d",line);
-                                // }
                                 d3.select(this).datum(new_coordinates).attr("d", line)
                             }
 
